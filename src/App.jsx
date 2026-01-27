@@ -50,6 +50,11 @@ function App() {
         type="text"
         value={text}
         onChange={(event) => setText(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            handleAdd();
+          }
+        }}
         placeholder="Enter todo"
       />
       <button onClick={handleAdd}>Add</button>
