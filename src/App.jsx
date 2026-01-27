@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
+import TodoInput from "./components/TodoInput";
+import TodoList from "./components/TodoList";
+
+const STORAGE_KEY = "todos_v1";
 
 function App() {
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
-  const STORAGE_KEY = "todos_v1";
 
   function handleAdd() {
     const trimmed = text.trim();
     if (!trimmed) return;
 
-    const newTodos = { text: trimmed, done: false };
-    setTodos([...todos, newTodos]);
+    setTodos([...todos, { text: trimmed, done: false }]);
     setText("");
   }
 
@@ -47,44 +49,12 @@ function App() {
   return (
     <div>
       <h1>Todo List</h1>
-      <input
-        type="text"
-        value={text}
-        onChange={(event) => setText(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            handleAdd();
-          }
-        }}
-        placeholder="Enter todo"
-      />
-      <button onClick={handleAdd}>Add</button>
-      {todos.length === 0 ? (
-        <p>No todos yet</p>
-      ) : (
-        <ul>
-          {todos.map((todo, index) => (
-            <li
-              key={index}
-              onClick={() => toggleTodo(index)}
-              style={{ cursor: "pointer" }}
-            >
-              {todo.done ? "☑️" : ""}
-              {todo.text}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteTodo(index);
-                }}
-                style={{ marginLeft: "10px" }}
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+
+      <TodoInput text={text} setText={setText} onAdd={handleAdd} />
+
+      <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} />
     </div>
   );
 }
+
 export default App;
