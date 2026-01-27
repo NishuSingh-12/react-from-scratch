@@ -4,6 +4,7 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
+  const STORAGE_KEY = "todos_v1";
 
   function handleAdd() {
     const trimmed = text.trim();
@@ -27,12 +28,12 @@ function App() {
   }
 
   useEffect(() => {
-    const saved = localStorage.getItem("todos");
+    const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         setTodos(JSON.parse(saved));
       } catch {
-        localStorage.removeItem("todos");
+        localStorage.removeItem(STORAGE_KEY);
       }
     }
     setIsLoaded(true);
@@ -40,7 +41,7 @@ function App() {
 
   useEffect(() => {
     if (!isLoaded) return;
-    localStorage.setItem("todos", JSON.stringify(todos));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
   }, [todos, isLoaded]);
 
   return (
@@ -58,27 +59,31 @@ function App() {
         placeholder="Enter todo"
       />
       <button onClick={handleAdd}>Add</button>
-      <ul>
-        {todos.map((todo, index) => (
-          <li
-            key={index}
-            onClick={() => toggleTodo(index)}
-            style={{ cursor: "pointer" }}
-          >
-            {todo.done ? "☑️" : ""}
-            {todo.text}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteTodo(index);
-              }}
-              style={{ marginLeft: "10px" }}
+      {todos.length === 0 ? (
+        <p>No todos yet</p>
+      ) : (
+        <ul>
+          {todos.map((todo, index) => (
+            <li
+              key={index}
+              onClick={() => toggleTodo(index)}
+              style={{ cursor: "pointer" }}
             >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+              {todo.done ? "☑️" : ""}
+              {todo.text}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteTodo(index);
+                }}
+                style={{ marginLeft: "10px" }}
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
